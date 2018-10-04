@@ -1,0 +1,134 @@
+---
+title: "Friday the 13th EDA"
+author: "Luis de Sousa"
+date: "October 4, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  fig.path = "imgs/"
+)
+```
+
+# U.S. Births
+
+This folder contains data behind the story [Some People Are Too Superstitious To Have A Baby On Friday The 13th](http://fivethirtyeight.com/features/some-people-are-too-superstitious-to-have-a-baby-on-friday-the-13th/).
+
+`us_births_2000-2014.csv` contains U.S. births data for the years 2000 to 2014, as provided by the Social Security Administration.
+
+The data have the following structure:
+
+Header | Definition
+---|---------
+`year` | Year
+`month` | Month
+`date_of_month` | Day number of the month
+`day_of_week` | Day of week, where 1 is Monday and 7 is Sunday
+`births` | Number of births
+
+There are 3 main goals for DataExplorer:
+
+# 1. Exploratory Data Analysis (EDA)
+
+```{r load}
+#load the library
+library(DataExplorer)
+#load input dataset
+us_births <- read.csv('us_births_2000-2014.csv', header = T)
+us_births$year<-as.factor(us_births$year)
+us_births$month<-as.factor(us_births$month)
+us_births$date_of_month<-as.factor(us_births$date_of_month)
+us_births$day_of_week<-as.factor(us_births$day_of_week)
+```
+
+## Variables
+```{r variables}
+plot_str(us_births)
+```
+
+## Snapshot
+```{r snapshot}
+introduce(us_births)
+```
+
+## Missing Values
+```{r missing values}
+plot_missing(us_births)
+```
+
+## Histogram
+```{r histogram}
+plot_histogram(us_births)
+```
+
+## Density plot
+```{r density plot}
+plot_density(us_births)
+```
+
+## Correlation Plot
+```{r correlation plot}
+plot_correlation(us_births, type = 'continuous')
+```
+
+## Barplots
+```{r barplots}
+#No Discrete Features
+#plot_bar(us_births)
+```
+
+## Boxplot
+```{r boxplot}
+plot_boxplot(us_births, by = "date_of_month") 
+```
+
+## Scatterplot
+```{r scatterplot}
+plot_scatterplot(us_births, by = "date_of_month", size = 0.5)
+```
+
+## Principle Component Analysis
+```{r}
+pca_df <- na.omit(us_births[, c("year","month","date_of_month")])
+plot_prcomp(pca_df)
+```
+
+# 2. Feature Engineering
+## Replace missing values
+```{r}
+final_df <- set_missing(us_births, list(0L, "unknown"))
+plot_missing(final_df)
+```
+
+## Group sparse categories
+```{r}
+final_df <- group_category(data = us_births, feature = "month", threshold = 0.2, update = TRUE)
+plot_bar(final_df$month)
+```
+
+## Dummify data (one hot encoding)
+```{r}
+plot_str(
+    list(
+        "original" = us_births,
+        "dummified" = dummify(us_births)
+    )
+)
+```
+
+## Drop features
+```{r}
+#identical(
+#  drop_columns(final_data, c("dst_origin", "dst_dest", "tzone_dest")),
+#  drop_columns(final_data, c(34, 41, 42))
+#)
+```
+
+# 3. Data Reporting
+## Create Report
+```{r create report, echo=TRUE, results='hide', message=FALSE}
+create_report(us_births)
+```
