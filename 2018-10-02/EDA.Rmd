@@ -32,8 +32,8 @@ Header | Definition
 There are 3 main goals for DataExplorer:
 
 # 1. Exploratory Data Analysis (EDA)
-
 ```{r load}
+#install.packages("DataExplorer")
 #load the library
 library(DataExplorer)
 #load input dataset
@@ -42,6 +42,12 @@ us_births$year<-as.factor(us_births$year)
 us_births$month<-as.factor(us_births$month)
 us_births$date_of_month<-as.factor(us_births$date_of_month)
 us_births$day_of_week<-as.factor(us_births$day_of_week)
+
+library(tidyverse)
+
+friday_13 <- us_births %>% 
+  filter(date_of_month == 13) %>%
+  filter(day_of_week == 5) #friday
 ```
 
 ## Variables
@@ -62,16 +68,18 @@ plot_missing(us_births)
 ## Histogram
 ```{r histogram}
 plot_histogram(us_births)
+plot_histogram(friday_13)
 ```
 
 ## Density plot
 ```{r density plot}
 plot_density(us_births)
+plot_density(friday_13)
 ```
 
 ## Correlation Plot
 ```{r correlation plot}
-plot_correlation(us_births, type = 'continuous')
+plot_correlation(us_births)
 ```
 
 ## Barplots
@@ -82,7 +90,8 @@ plot_correlation(us_births, type = 'continuous')
 
 ## Boxplot
 ```{r boxplot}
-plot_boxplot(us_births, by = "date_of_month") 
+plot_boxplot(us_births, by = "date_of_month")
+plot_boxplot(friday_13, by = "month")
 ```
 
 ## Scatterplot
@@ -130,5 +139,5 @@ plot_str(
 # 3. Data Reporting
 ## Create Report
 ```{r create report, echo=TRUE, results='hide', message=FALSE}
-create_report(us_births)
+#create_report(us_births)
 ```
